@@ -1,14 +1,21 @@
 package com.es.core.model.phone;
 
+import com.es.core.model.phone.color.Color;
+import com.es.core.model.phone.color.ColorDao;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
+import java.util.Set;
 
 @Component
 public class PhoneRowMapper implements RowMapper<Phone> {
+    @Resource
+    private ColorDao colorDao;
+
     @Override
     public Phone mapRow(ResultSet resultSet, int i) throws SQLException {
         Phone phone = new Phone();
@@ -39,11 +46,8 @@ public class PhoneRowMapper implements RowMapper<Phone> {
         phone.setImageUrl(resultSet.getString("IMAGEURL"));
         phone.setDescription(resultSet.getString("DESCRIPTION"));
 
-        Color color = new Color();
-        color.setCode(resultSet.getString("COLOR"));
-        HashSet<Color> colors = new HashSet<>();
-        colors.add(color);
-        phone.setColors(colors);
+        Set<Color> colors = new HashSet<>(colorDao.getColors(phone.getId()));
+        phone.setColors(new HashSet<>(colorDao.getColors(phone.getId())));
 
         return phone;
     }

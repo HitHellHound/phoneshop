@@ -1,5 +1,7 @@
 package com.es.core.model.phone;
 
+import com.es.core.enums.SortField;
+import com.es.core.enums.SortOrder;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -23,17 +25,19 @@ public class JdbcPhoneDao implements PhoneDao {
             "DisplayTechnology, BackCameraMegapixels, FrontCameraMegapixels, RamGb, InternalStorageGb, BatteryCapacityMah, " +
             "TalkTimeHours, StandByTimeHours, Bluetooth, Positioning, ImageUrl, Description) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    private static final String FIND_ALL_QUERY = "select ph.*, colors.code as color " +
-            "from (select phones.* from phones offset ? limit ?) ph " +
-            "left join phone2color on ph.id = phone2color.phoneId " +
-            "left join colors on phone2color.colorId = colors.id";
+    private static final String SIMPLE_FIND_ALL_QUERY = "select ph.* " +
+            "from (select PHONES.* from PHONES " +
+            "join STOCKS on PHONES.ID = STOCKS.PHONEID where STOCKS.STOCK - STOCKS.RESERVED > 0 offset ? limit ?) ph";
+    private static final String NUMBER_OF_PHONES_QUERY = "SELECT count(*) FROM PHONES JOIN STOCKS ON PHONES.ID = STOCKS.PHONEID WHERE STOCKS.STOCK - STOCKS.RESERVED > 0";
     private static final String SELECT_COLOR_BY_CODE_QUERY = "SELECT colors.id FROM colors WHERE colors.code = ?";
     private static final String INSERT_NEW_COLOR_DEPENDENCE_QUERY = "INSERT INTO phone2color (phoneId, colorId) VALUES (?, ?)";
 
+    @Override
     public Optional<Phone> get(final Long key) {
         return jdbcTemplate.query(GET_QUERY, phoneRowMapper, key).stream().findAny();
     }
 
+    @Override
     public void save(final Phone phone) {
         jdbcTemplate.update(SAVE_INSERT_QUERY,
                 phone.getId(), phone.getBrand(), phone.getModel(), phone.getPrice(), phone.getDisplaySizeInches(),
@@ -51,7 +55,49 @@ public class JdbcPhoneDao implements PhoneDao {
                 });
     }
 
-    public List<Phone> findAll(int offset, int limit) {
-        return jdbcTemplate.query(FIND_ALL_QUERY, phoneRowMapper, offset, limit);
+    @Override
+    public Long numberByQuery(String query) {
+        if (query == null || query.equals(""))
+            return jdbcTemplate.queryForObject(NUMBER_OF_PHONES_QUERY, Long.class);
+        return jdbcTemplate.queryForObject(NUMBER_OF_PHONES_QUERY + " AND " +
+                "(LOWER(PHONES.BRAND) LIKE LOWER('" + query + "%') " +
+                "OR LOWER(PHONES.BRAND) LIKE LOWER('% " + query + "%') " +
+                "OR LOWER(PHONES.MODEL) LIKE LOWER('" + query + "%') " +
+                "OR LOWER(PHONES.MODEL) LIKE LOWER('% " + query + "%'))", Long.class);
+    }
+
+    @Override
+    public List<Phone> findAll(int offset, int limit, SortField sortField, SortOrder sortOrder, String query) {
+        return jdbcTemplate.query(makeFindAllSQL(sortField, sortOrder, query), phoneRowMapper, offset, limit);
+    }
+
+    private String makeFindAllSQL(SortField sortField, SortOrder sortOrder, String query) {
+        if (sortField != null || query != null && !query.equals("")) {
+            String sql = "SELECT ph.* from (select PHONES.* from PHONES " +
+                    "join STOCKS on PHONES.ID = STOCKS.PHONEID where STOCKS.STOCK - STOCKS.RESERVED > 0 ";
+
+            if (query != null && !query.equals("")) {
+                sql += "AND (" +
+                        "LOWER(PHONES.BRAND) LIKE LOWER('" + query + "%') " +
+                        "OR LOWER(PHONES.BRAND) LIKE LOWER('% " + query + "%') " +
+                        "OR LOWER(PHONES.MODEL) LIKE LOWER('" + query + "%') " +
+                        "OR LOWER(PHONES.MODEL) LIKE LOWER('% " + query + "%')" +
+                        ") ";
+            }
+
+            if (sortField != null) {
+                sql += "ORDER BY " + sortField.name() + " ";
+                if (sortOrder != null) {
+                    sql += sortOrder.name() + " ";
+                } else {
+                    sql += "ASC ";
+                }
+            }
+
+            sql += "offset ? limit ?) ph";
+            return sql;
+        } else {
+            return SIMPLE_FIND_ALL_QUERY;
+        }
     }
 }
