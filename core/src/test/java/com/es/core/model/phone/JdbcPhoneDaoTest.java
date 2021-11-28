@@ -1,5 +1,6 @@
 package com.es.core.model.phone;
 
+import com.es.core.model.phone.color.Color;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.jdbc.core.JdbcTemplate;
