@@ -2,7 +2,7 @@ package com.es.core.cart;
 
 import java.math.BigDecimal;
 
-public class CartAddMessageDto {
+public class CartStatusMessageDto {
     private String message;
     private boolean errorStatus;
     private long phoneId;

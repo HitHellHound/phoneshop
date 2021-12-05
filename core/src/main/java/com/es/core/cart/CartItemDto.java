@@ -1,14 +1,22 @@
 package com.es.core.cart;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
+import com.es.core.validation.QuantityNotNul;
 
+import javax.validation.constraints.Min;
+
+@QuantityNotNul(message = "Quantity was empty")
 public class CartItemDto {
-    @NotNull
     private Long phoneId;
-    @NotNull(message = "Quantity is empty")
     @Min(value = 1, message = "Quantity must be more then 0")
     private Long quantity;
+
+    public CartItemDto() {
+    }
+
+    public CartItemDto(Long phoneId, Long quantity) {
+        this.phoneId = phoneId;
+        this.quantity = quantity;
+    }
 
     public Long getPhoneId() {
         return phoneId;
