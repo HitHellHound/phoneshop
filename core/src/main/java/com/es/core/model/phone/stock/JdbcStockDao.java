@@ -13,10 +13,18 @@ public class JdbcStockDao implements StockDao {
     private StockRowMapper stockRowMapper;
 
     private static final String GET_STOCK_BY_ID = "SELECT * FROM stocks WHERE phoneId = ?";
+    private static final String UPDATE_STOCK = "UPDATE stocks SET reserved = ? WHERE phoneId = ?";
 
     @Override
     public Integer availableStock(Long phoneId) {
         Stock stock = jdbcTemplate.queryForObject(GET_STOCK_BY_ID, stockRowMapper, phoneId);
         return stock.getStock() - stock.getReserved();
+    }
+
+    @Override
+    public void reserve(Long phoneId, Long quantity) {
+        Stock stock = jdbcTemplate.queryForObject(GET_STOCK_BY_ID, stockRowMapper, phoneId);
+        Integer newReserved = stock.getReserved() + quantity.intValue();
+        jdbcTemplate.update(UPDATE_STOCK, newReserved, phoneId);
     }
 }
