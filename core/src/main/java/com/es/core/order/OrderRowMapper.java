@@ -1,6 +1,7 @@
 package com.es.core.order;
 
 import com.es.core.model.order.Order;
+import com.es.core.model.order.OrderStatus;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +28,9 @@ public class OrderRowMapper implements RowMapper<Order> {
         order.setContactPhoneNo(resultSet.getString("contactPhoneNo"));
         order.setAdditionalInformation(resultSet.getString("additionalInformation"));
         order.setOrderItems(jdbcOrderItemDao.getOrderItems(order.getId()));
+        order.setDate(resultSet.getDate("date"));
+        order.setTime(resultSet.getTime("time"));
+        order.setStatus(OrderStatus.getValue(resultSet.getString("status")));
         return order;
     }
 }
