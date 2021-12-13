@@ -5,6 +5,7 @@ import java.util.List;
 
 public class Order {
     private Long id;
+    private String secureID;
     private List<OrderItem> orderItems;
     /**
      * A sum of order item prices;
@@ -20,6 +21,7 @@ public class Order {
     private String lastName;
     private String deliveryAddress;
     private String contactPhoneNo;
+    private String additionalInformation;
 
     private OrderStatus status;
 
@@ -29,6 +31,14 @@ public class Order {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getSecureID() {
+        return secureID;
+    }
+
+    public void setSecureID(String secureID) {
+        this.secureID = secureID;
     }
 
     public List<OrderItem> getOrderItems() {
@@ -93,6 +103,14 @@ public class Order {
 
     public void setContactPhoneNo(String contactPhoneNo) {
         this.contactPhoneNo = contactPhoneNo;
+    }
+
+    public String getAdditionalInformation() {
+        return additionalInformation;
+    }
+
+    public void setAdditionalInformation(String additionalInformation) {
+        this.additionalInformation = additionalInformation;
     }
 
     public OrderStatus getStatus() {
