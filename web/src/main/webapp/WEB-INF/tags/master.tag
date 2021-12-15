@@ -29,6 +29,11 @@
 </head>
 <body>
 <header>
+    <div class="container bg-light">
+        <div class="float-right">
+            <jsp:include page="/login/userMiniStatus"/>
+        </div>
+    </div>
     <div class="container bg-dark">
         <div class="row">
             <div class="col-6">
@@ -40,12 +45,7 @@
             </div>
             <div class="col-6">
                 <div class="float-right">
-                    <form action="<c:url value="/cart"/>">
-                    <button class="btn btn-light"> My Cart:
-                        <span id="cartTotalQuantity"><c:out value="${cart.totalQuantity}"/></span> items
-                        <span id="cartTotalCost"><c:out value="${cart.totalCost}"/></span>$
-                    </button>
-                    </form>
+                    <jsp:include page="/cart/minicart"/>
                 </div>
             </div>
         </div>

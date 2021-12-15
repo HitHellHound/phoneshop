@@ -61,10 +61,10 @@
               <img class="rounded" src="https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/${phone.imageUrl}">
             </td>
             <td class="align-middle">
-              <a href="<c:url value="/productDetails/${cart.items[i].phone.id}"/>">${phone.brand}</a>
+              <a href="<c:url value="/productDetails/${phone.id}"/>">${phone.brand}</a>
             </td>
             <td class="align-middle">
-              <a href="<c:url value="/productDetails/${cart.items[i].phone.id}"/>">${phone.model}</a>
+              <a href="<c:url value="/productDetails/${phone.id}"/>">${phone.model}</a>
             </td>
             <td class="align-middle">
               <ul>

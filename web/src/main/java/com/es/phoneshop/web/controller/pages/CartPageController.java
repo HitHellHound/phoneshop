@@ -56,6 +56,12 @@ public class CartPageController {
         return cartService.getCart();
     }
 
+    @RequestMapping("/minicart")
+    public String getMiniCart(Model model) {
+        model.addAttribute("cart", cartService.getCart());
+        return "minicart";
+    }
+
     private Map<Long, Long> makeUpdateMap(CartItemsUpdateDto dto) {
         Map<Long, Long> map = new HashMap<Long, Long>();
         dto.getItems().stream().forEach(item -> {

@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -19,10 +20,11 @@ public class JdbcOrderDao implements OrderDao {
 
     private static final String GET_ORDER_BY_ID = "SELECT * FROM orders WHERE id = ?";
     private static final String GET_ORDER_BY_SECURE_ID = "SELECT * FROM orders WHERE secureID = ?";
+    private static final String GET_ALL_ORDERS = "SELECT * FROM orders";
     private static final String SAVE_ORDER = "INSERT INTO orders (secureID, subtotal, deliveryPrice, " +
-            "totalPrice, firstName, lastName, deliveryAddress, contactPhoneNo, additionalInformation) " +
+            "totalPrice, firstName, lastName, deliveryAddress, contactPhoneNo, additionalInformation, date, time) " +
             "VALUES (:secureID, :subtotal, :deliveryPrice, :totalPrice, :firstName, :lastName, " +
-            ":deliveryAddress, :contactPhoneNo, :additionalInformation)";
+            ":deliveryAddress, :contactPhoneNo, :additionalInformation, :date, :time)";
     private static final String CHANGE_STATUS = "UPDATE orders SET status = ? WHERE id = ?";
     private static final String ADD_ORDER2ITEM = "INSERT INTO order2item (orderId, phoneId, quantity) " +
             "VALUES (?, ?, ?)";
@@ -40,6 +42,11 @@ public class JdbcOrderDao implements OrderDao {
     }
 
     @Override
+    public List<Order> findOrders() {
+        return namedParameterJdbcTemplate.query(GET_ALL_ORDERS, orderRowMapper);
+    }
+
+    @Override
     public void save(final Order order) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         namedParameterJdbcTemplate.update(SAVE_ORDER, new BeanPropertySqlParameterSource(order), keyHolder);
@@ -50,5 +57,11 @@ public class JdbcOrderDao implements OrderDao {
         order.getOrderItems().stream()
                 .forEach(item -> namedParameterJdbcTemplate.getJdbcOperations()
                         .update(ADD_ORDER2ITEM, id, item.getPhone().getId(), item.getQuantity()));
+    }
+
+    @Override
+    public void changeStatus(Long id, OrderStatus status) {
+        namedParameterJdbcTemplate.getJdbcOperations()
+                .update(CHANGE_STATUS, status.toString(), id);
     }
 }
