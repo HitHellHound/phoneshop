@@ -1,20 +1,28 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="frm" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <tags:master pageTitle="Login">
+    <c:if test="${not empty param.error}">
+        <div class="container">
+            <div class="panel panel-danger">
+                <div class="panel-heading">Error</div>
+                <div class="panel-body">Bad credits</div>
+            </div>
+        </div>
+    </c:if>
     <div class="container">
         <div class="row">
             <div class="col-4"></div>
             <div class="col-4 container-fluid">
-                <frm:form method="post" modelAttribute="loginDto" action="${pageContext.servletContext.contextPath}/login">
+                <form method="post" name="f" action="<c:url value="/login"/>">
                     <div class="row">
                         <div class="col-4">
                             Login:
                         </div>
                         <div class="col-8">
-                            <frm:input path="login"/>
-                            <p class="text-danger"><frm:errors path="login"/></p>
+                            <input type="text" name="username">
                         </div>
                     </div>
                     <br>
@@ -23,13 +31,12 @@
                             Password:
                         </div>
                         <div class="col-8">
-                            <frm:input path="password" type="password"/>
-                            <p class="text-danger"><frm:errors path="password"/></p>
+                            <input type="password" name="password">
                         </div>
                     </div>
                     <br>
-                    <button class="btn btn-light float-right" type="submit">Login</button>
-                </frm:form>
+                    <button class="btn btn-light float-right" type="submit" value="submit">Login</button>
+                </form>
             </div>
             <div class="col-4"></div>
         </div>

@@ -31,7 +31,7 @@
 <header>
     <div class="container bg-light">
         <div class="float-right">
-            <jsp:include page="/login/userMiniStatus"/>
+            <jsp:include page="/signIn/userMiniStatus"/>
         </div>
     </div>
     <div class="container bg-dark">
