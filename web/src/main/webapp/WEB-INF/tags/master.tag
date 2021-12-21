@@ -47,6 +47,9 @@
                 <div class="float-right">
                     <jsp:include page="/cart/minicart"/>
                 </div>
+                <form method="get" action="<c:url value="/quickCart"/>">
+                    <button type="submit">Quick cart</button>
+                </form>
             </div>
         </div>
     </div>

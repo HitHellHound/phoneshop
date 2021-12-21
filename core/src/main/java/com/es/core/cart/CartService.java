@@ -11,6 +11,8 @@ public interface CartService {
 
     void addPhone(Long phoneId, Long quantity) throws OutOfStockException;
 
+    void addPhoneByModel(String model, Long quantity) throws PhoneNotFoundException;
+
     /**
      * @param items key: {@link com.es.core.model.phone.Phone#id}
      *              value: quantity

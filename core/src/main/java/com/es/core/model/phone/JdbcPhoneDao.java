@@ -20,6 +20,7 @@ public class JdbcPhoneDao implements PhoneDao {
             "FROM (SELECT phones.* FROM phones WHERE phones.id = ?) AS ph " +
             "LEFT JOIN phone2color ON ph.id = phone2color.phoneId " +
             "LEFT JOIN colors ON phone2color.colorId = colors.id";
+    private static final String GET_BY_MODEL = "SELECT phones.* FROM phones WHERE phones.model = ?";
     private static final String SAVE_INSERT_QUERY = "INSERT INTO phones (Id, Brand, Model, Price, DisplaySizeInches, " +
             "WeightGr, LengthMm, WidthMm, HeightMm, Announced, DeviceType, Os, DisplayResolution, PixelDensity, " +
             "DisplayTechnology, BackCameraMegapixels, FrontCameraMegapixels, RamGb, InternalStorageGb, BatteryCapacityMah, " +
@@ -35,6 +36,11 @@ public class JdbcPhoneDao implements PhoneDao {
     @Override
     public Optional<Phone> get(final Long key) {
         return jdbcTemplate.query(GET_QUERY, phoneRowMapper, key).stream().findAny();
+    }
+
+    @Override
+    public Optional<Phone> getByModel(String model) {
+        return jdbcTemplate.query(GET_BY_MODEL, phoneRowMapper, model).stream().findAny();
     }
 
     @Override

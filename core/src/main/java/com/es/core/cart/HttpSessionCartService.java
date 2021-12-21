@@ -1,11 +1,13 @@
 package com.es.core.cart;
 
+import com.es.core.model.phone.Phone;
 import com.es.core.model.phone.PhoneDao;
 import com.es.core.model.phone.stock.StockDao;
 import com.es.core.order.OutOfStockException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.awt.color.ProfileDataException;
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -38,6 +40,22 @@ public class HttpSessionCartService implements CartService {
         } else {
             if (stock - (quantity + item.getQuantity()) < 0)
                 throw new OutOfStockException("Available " + (stock - item.getQuantity()));
+            item.setQuantity(item.getQuantity() + quantity);
+        }
+        recalculateCart(cart);
+    }
+
+    @Override
+    public void addPhoneByModel(String model, Long quantity) throws PhoneNotFoundException {
+        Phone phone = phoneDao.getByModel(model).orElseThrow(() -> new PhoneNotFoundException("Mistake in model"));
+        CartItem item = cart.findItemById(phone.getId()).orElse(null);
+        if (item == null) {
+            item = new CartItem();
+            item.setPhone(phone);
+            item.setQuantity(quantity);
+            cart.getItems().add(item);
+        }
+        else {
             item.setQuantity(item.getQuantity() + quantity);
         }
         recalculateCart(cart);
